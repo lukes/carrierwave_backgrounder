@@ -53,17 +53,17 @@ module CarrierWave
       def enqueue_for_backend(worker, class_name, subject_id, mounted_as, crop_params)
         case backend
         when :girl_friday
-          @girl_friday_queue << { :worker => worker.new(self.class.name, subject_id, mounted_as) }
+          @girl_friday_queue << { :worker => worker.new(self.class.name, subject_id, mounted_as, crop_params) }
         when :delayed_job
-          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as)
+          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as, crop_params)
         when :resque
           ::Resque.enqueue worker, class_name, subject_id, mounted_as, crop_params
         when :qu
-          ::Qu.enqueue worker, class_name, subject_id, column.mounted_as
+          ::Qu.enqueue worker, class_name, subject_id, column.mounted_as, crop_params
         when :sidekiq
-          ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as
+          ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as, crop_params
         when :qc
-          ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s
+          ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s, crop_params
         end
       end
 
