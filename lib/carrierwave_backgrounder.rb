@@ -50,20 +50,20 @@ module CarrierWave
         end
       end
 
-      def enqueue_for_backend(worker, class_name, subject_id, mounted_as, crop_params)
+      def enqueue_for_backend(worker, class_name, subject_id, mounted_as, crop_params, token)
         case backend
         when :girl_friday
-          @girl_friday_queue << { :worker => worker.new(self.class.name, subject_id, mounted_as, crop_params) }
+          @girl_friday_queue << { :worker => worker.new(self.class.name, subject_id, mounted_as, crop_params, token) }
         when :delayed_job
-          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as, crop_params)
+          ::Delayed::Job.enqueue worker.new(class_name, subject_id, mounted_as, crop_params, token)
         when :resque
-          ::Resque.enqueue worker, class_name, subject_id, mounted_as, crop_params
+          ::Resque.enqueue worker, class_name, subject_id, mounted_as, crop_params, token
         when :qu
-          ::Qu.enqueue worker, class_name, subject_id, column.mounted_as, crop_params
+          ::Qu.enqueue worker, class_name, subject_id, column.mounted_as, crop_params, token
         when :sidekiq
-          ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as, crop_params
+          ::Sidekiq::Client.enqueue worker, class_name, subject_id, mounted_as, crop_params, token
         when :qc
-          ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s, crop_params
+          ::QC.enqueue "#{worker.name}.perform", class_name, subject_id, mounted_as.to_s, crop_params, token
         end
       end
 
