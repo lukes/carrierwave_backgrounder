@@ -58,7 +58,7 @@ module CarrierWave
 
             def enqueue_#{column}_background_job
               crop_params = [crop_x, crop_y, crop_w, crop_h]
-              token = model.instance_variable_get("@#{column}_token")
+              token = instance_variable_get("@#{column}_token")
               CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as, crop_params, token)
             end
 
